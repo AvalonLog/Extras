@@ -1,0 +1,28 @@
+#!/usr/bin/python3
+try:
+    from requests import get
+except ImportError:
+    raise ImportError('[!] sudo pip3 install requests')
+from argparse import ArgumentParser, RawDescriptionHelpFormatter
+parser = ArgumentParser(prog='IP IP < GEO > IP IP', usage='%(prog)s [OPTIONS]', formatter_class=RawDescriptionHelpFormatter, description='''
+   # # # # # # # # # # # # # # # # # # # # # # # # # # 
+   # Gabriel Gallo Martines.         \u001b[36;1m┌─┐┌─┐┌─┐┬┌─┐\u001b[0m   #
+   # Geographic IP.                  \u001b[36;1m│ ┬├┤ │ ││├─┘\u001b[0m   #
+   # Version 2.0 2020.               \u001b[36;1m└─┘└─┘└─┘┴┴  \u001b[0m . #
+   # # # # # # # # # # # # # # # # # # # # # # # # # #''')
+parser.add_argument('-m', '--my', help='Your IP.', action='store_true')
+parser.add_argument('-i', '--ip', metavar='IP', help='Optional GEO IP.', type=str)
+args = parser.parse_args()
+if args.my and not args.ip:
+    json = get('https://ifconfig.me')
+    json = get(f'https://freegeoip.app/json/{json.text}')
+    for x in json.json():
+        if json.json()[x]: print(f'\u001b[32;1m{x:>13}\u001b[0m: {json.json()[x]}')
+elif args.ip and not args.my:
+    try:
+        json = get(f'https://freegeoip.app/json/{args.ip}')
+        for x in json.json():
+            if json.json()[x]: print(f'\u001b[32;1m{x:>13}\u001b[0m: {json.json()[x]}')
+    except: print('usage: IP IP < GEO > IP IP [OPTIONS]\nIP IP < GEO > IP IP: error: argument -i/--ip: Invalid argument')
+else:
+    exit(parser.print_help())
